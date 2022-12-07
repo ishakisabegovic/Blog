@@ -8,8 +8,8 @@ namespace Blog.Repositories.Tag
 {
     public interface ITagRepository
     {
-        IEnumerable<Core.Entities.Tag> GetAllTags();
-        Core.Entities.Tag GetTag(string title);
+        Task<IEnumerable<Core.Entities.Tag>> GetAllTags();
+        Task<Core.Entities.Tag> GetTag(string title);
         public void Add(Core.Entities.Tag tag);
 
     }

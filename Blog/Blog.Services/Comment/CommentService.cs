@@ -3,6 +3,7 @@ using Blog.Core.DTOs;
 using Blog.Core.Entities.Exceptions;
 using Blog.Repositories.RepositoryManager;
 using Blog.Services.Logger;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace Blog.Services.Comment
             _mapper = mapper;
         }
 
-        public CommentDto CreateCommentForPost(string slug, CommentCreateDto commentDto)
+        public async Task<CommentDto> CreateCommentForPost(string slug, CommentCreateDto commentDto)
         {
             var post = _repository.Post.GetPost(slug);
             var comment = new Core.Entities.Comment
@@ -33,21 +34,21 @@ namespace Blog.Services.Comment
                 PostId = post.Id
             };
             _repository.Comment.CreateCommentForPost(comment);
-            _repository.Save();
+            await _repository.Save();
             return _mapper.Map<CommentDto>(comment);
         }
 
-        public void DeleteCommentFromPost(string slug, int commentId)
+        public async Task DeleteCommentFromPost(string slug, int commentId)
         {
             var post = _repository.Post.GetPost(slug);
             if (post is null) throw new PostNotFoundException(slug);
-            var comment = _repository.Comment.GetCommentsFromPost(post.Id).FirstOrDefault(x => x.Id == commentId);
+            var comment =  _repository.Comment.GetCommentsFromPost(post.Id).FirstOrDefault(x => x.Id == commentId);
             if (comment is null) throw new CommentNotFoundException(commentId);
             _repository.Comment.DeleteCommentFromPost(comment);
-            _repository.Save();
+            await _repository.Save();
         }
 
-        public IEnumerable<CommentDto> GetCommentsFromPost(string slug)
+        public async Task<IEnumerable<CommentDto>> GetCommentsFromPost(string slug)
         {
             var post = _repository.Post.GetPost(slug);
             if (post is null) throw new PostNotFoundException(slug);

@@ -24,9 +24,9 @@ namespace Blog.Services.Tag
             _mapper = mapper;
         }
 
-        public IEnumerable<TagDto> GetAllTags()
+        public async Task<IEnumerable<TagDto>> GetAllTags()
         {
-            var tags = _repository.Tag.GetAllTags();
+            var tags = await _repository.Tag.GetAllTags();
             var mappedTags = _mapper.Map<IEnumerable<TagDto>>(tags);
             return mappedTags;
         }

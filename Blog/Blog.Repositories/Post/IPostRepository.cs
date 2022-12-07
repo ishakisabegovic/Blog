@@ -9,9 +9,9 @@ namespace Blog.Repositories.Post
 {
     public interface IPostRepository
     {
-        IEnumerable<Core.Entities.Post> GetAllPosts();
+        Task<IEnumerable<Core.Entities.Post>> GetAllPosts();
 
-        IEnumerable<Core.Entities.Post> GetPostsByCondition(
+        Task<IEnumerable<Core.Entities.Post>> GetPostsByCondition(
             Expression<Func<Core.Entities.Post, bool>> expression);
 
         Core.Entities.Post GetPost(string slug);

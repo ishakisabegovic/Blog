@@ -18,21 +18,23 @@ namespace Blog.Repositories.Post
         {
         }
 
-        public IEnumerable<Core.Entities.Post> GetAllPosts() => 
-            GetAll()
+        public async Task<IEnumerable<Core.Entities.Post>> GetAllPosts() => 
+            await GetAll()
             .Include(x=>x.PostTags)
             .ThenInclude(x=>x.Tag)
-            .ToList();
-
-        public Core.Entities.Post GetPost(string slug) =>
-            GetByCondition(x=>x.Slug == slug)            
+            .OrderByDescending(x => x.CreatedAt)
+            .ToListAsync();
+        
+        public  Core.Entities.Post GetPost(string slug) =>
+              GetByCondition(x=>x.Slug == slug)            
             .Include(x=>x.PostTags)
             .ThenInclude(x=>x.Tag)
+            .ThenInclude(x => x.Title)
             .SingleOrDefault();
 
-        public IEnumerable<Core.Entities.Post> GetPostsByCondition(
+        public async  Task<IEnumerable<Core.Entities.Post>> GetPostsByCondition(
             Expression<Func<Core.Entities.Post, bool>> expression) 
-            => GetByCondition(expression).ToList();
+            => await GetByCondition(expression).OrderByDescending(x=>x.CreatedAt).ToListAsync();
 
         public void CreatePost(Core.Entities.Post post) => Create(post);
         public void UpdatePost(Core.Entities.Post post) => Update(post);

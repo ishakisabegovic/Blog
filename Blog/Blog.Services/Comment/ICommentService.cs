@@ -8,8 +8,8 @@ namespace Blog.Services.Comment
 {
     public interface ICommentService
     {
-        IEnumerable<Core.DTOs.CommentDto> GetCommentsFromPost(string slug);
-        Core.DTOs.CommentDto CreateCommentForPost(string slug, Core.DTOs.CommentCreateDto commentDto);
-        void DeleteCommentFromPost(string slug, int commentId);
+        Task<IEnumerable<Core.DTOs.CommentDto>> GetCommentsFromPost(string slug);
+        Task<Core.DTOs.CommentDto> CreateCommentForPost(string slug, Core.DTOs.CommentCreateDto commentDto);
+        Task DeleteCommentFromPost(string slug, int commentId);
     }
 }

@@ -36,7 +36,7 @@ namespace Blog.Repositories.RepositoryManager
         public IPostTagRepository PostTag => _postTagRepository.Value;
         public ICommentRepository Comment => _commentRepository.Value;
         
-        public void Save() => _context.SaveChanges();
+        public async Task Save() => await _context.SaveChangesAsync();
         
     }
 }

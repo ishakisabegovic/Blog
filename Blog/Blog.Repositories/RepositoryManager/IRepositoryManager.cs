@@ -16,6 +16,6 @@ namespace Blog.Repositories.RepositoryManager
         ITagRepository Tag { get; }
         IPostTagRepository PostTag { get; }
         ICommentRepository Comment { get; }       
-        void Save();
+        Task Save();
     }
 }
