@@ -13,9 +13,9 @@ namespace Blog.Api.Controllers
         public TagsController(IServiceManager service) => _service = service;
 
         [HttpGet]
-        public IActionResult GetTags()
+        public async Task<IActionResult> GetTags()
         {
-            var tagsToReturn = _service.TagService.GetAllTags();
+            var tagsToReturn = await _service.TagService.GetAllTags();
             if (tagsToReturn == null) return BadRequest("There are no tags in the database.");
             return Ok(tagsToReturn);
         }

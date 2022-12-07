@@ -24,14 +24,21 @@ namespace Blog.Services.Post
             _mapper = mapper;
         }       
 
-        public IEnumerable<Core.DTOs.PostDto> GetAllPosts()
-        {            
-                var posts = _repository.Post.GetAllPosts();               
+        public async Task<Core.DTOs.PostListDto> GetAllPosts(string? tagFilter)
+        {                           
+                var posts = await _repository.Post.GetAllPosts();
+
+                if (tagFilter != "" && tagFilter != null)
+                posts = posts.Where(x => x.PostTags.Any(m => m.Tag.Title.ToLower().Contains(tagFilter.ToLower())));
+                            
                 var postsDto = _mapper.Map<List<Core.DTOs.PostDto>>(posts);
-                return postsDto;
+
+                var postsToReturn = new PostListDto(postsDto, postsDto.Count());  
+                
+                return postsToReturn;
         }
 
-        public PostDto GetPostBySlug(string slug)
+        public async Task<PostDto> GetPostBySlug(string slug)
         {            
                 var post = _repository.Post.GetPost(slug);
 
@@ -43,10 +50,10 @@ namespace Blog.Services.Post
 
         }
 
-        public PostDto CreatePost(PostCreateDto post)
+        public async Task<PostDto> CreatePost(PostCreateDto post)
         {
-            var posts = _repository.Post.GetPostsByCondition(x=>x.Title==post.Title);
-            if (posts == null)
+            var posts = await _repository.Post.GetPostsByCondition(x=>x.Title==post.Title);
+            if (posts.Count() == 0)
             {
                 var postEntity = new Core.Entities.Post()
                 {
@@ -65,7 +72,7 @@ namespace Blog.Services.Post
 
                 foreach (var tag in post.PostTags)
                 {
-                    var tagFromDB = _repository.Tag.GetTag(tag);
+                    var tagFromDB = await _repository.Tag.GetTag(tag);
                     if (tagFromDB == null)
                     {
                         var newTag = new Core.Entities.Tag()
@@ -107,9 +114,9 @@ namespace Blog.Services.Post
 
         }
 
-        public PostDto UpdatePost(string slug, PostUpdateDto postDto)
+        public async Task<PostDto> UpdatePost(string slug, PostUpdateDto postDto)
         {
-            var post = _repository.Post.GetPost(slug);
+            var post =  _repository.Post.GetPost(slug);
             if (post is null) throw new PostNotFoundException(slug);
 
             //_mapper.Map(postDto, post);
@@ -126,18 +133,18 @@ namespace Blog.Services.Post
             post.UpdatedAt = DateTime.Now;
 
             _repository.Post.UpdatePost(post);           
-            _repository.Save();
+            await _repository.Save();
 
             return _mapper.Map<PostDto>(post);
         }
 
-        public void DeletePost(string slug)
+        public async Task DeletePost(string slug)
         {
             var post = _repository.Post.GetPost(slug);
             if (post is null) 
                 throw new PostNotFoundException(slug);
             _repository.Post.DeletePost(post);
-            _repository.Save();
+            await _repository.Save();
         }
     }
 }

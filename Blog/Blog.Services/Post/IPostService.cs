@@ -8,12 +8,12 @@ namespace Blog.Services.Post
 {
     public interface IPostService
     {
-        IEnumerable<Core.DTOs.PostDto> GetAllPosts();
+        Task<Core.DTOs.PostListDto> GetAllPosts(string tagFilter);
 
-        Core.DTOs.PostDto GetPostBySlug(string slug);
+        Task<Core.DTOs.PostDto> GetPostBySlug(string slug);
 
-        Core.DTOs.PostDto CreatePost(Core.DTOs.PostCreateDto post);
-        Core.DTOs.PostDto UpdatePost(string slug, Core.DTOs.PostUpdateDto postDto);
-        void DeletePost(string slug);
+        Task<Core.DTOs.PostDto> CreatePost(Core.DTOs.PostCreateDto post);
+        Task<Core.DTOs.PostDto> UpdatePost(string slug, Core.DTOs.PostUpdateDto postDto);
+        Task DeletePost(string slug);
     }
 }

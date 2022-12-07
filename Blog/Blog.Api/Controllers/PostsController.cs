@@ -3,6 +3,7 @@ using Blog.Services.ServiceManager;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
+
 namespace Blog.Api.Controllers
 {
     [Route("api/posts")]
@@ -14,34 +15,38 @@ namespace Blog.Api.Controllers
         public PostsController(IServiceManager service) => _service = service;
 
         [HttpGet]
-        public IActionResult GetPosts()
+        public async Task<IActionResult> GetPosts([FromQuery] string? tagFilter)
         {
-            var posts = _service.PostService.GetAllPosts();
+            var posts = await _service.PostService.GetAllPosts(tagFilter);           
             return Ok(posts);
         }
 
         [HttpGet("{slug}")]
-        public IActionResult GetPost(string slug)
+        public async Task<IActionResult> GetPost(string slug)
         {
-            var postToReturn = _service.PostService.GetPostBySlug(slug);
+            var postToReturn = await _service.PostService.GetPostBySlug(slug);
             return Ok(postToReturn);
         }
 
         [HttpPost]
-        public IActionResult CreatePost([FromBody] PostCreateDto postDto)
+        public async Task<IActionResult> CreatePost([FromBody] PostCreateDto postDto)
         {
             if (postDto is null)
                 return BadRequest("Post object is null.");
-            var postToReturn = _service.PostService.CreatePost(postDto);
+            if (!ModelState.IsValid) 
+                return UnprocessableEntity(ModelState);
+            var postToReturn = await _service.PostService.CreatePost(postDto);
             return Ok(postToReturn);
         }
 
         [HttpPut("{slug}")]
-        public IActionResult UpdatePost(string slug, [FromBody] PostUpdateDto postDto)
+        public async Task<IActionResult> UpdatePost(string slug, [FromBody] PostUpdateDto postDto)
         {
             if (postDto is null)
                 return BadRequest("Post object is null.");
-            var postToReturn = _service.PostService.UpdatePost(slug, postDto);
+            if (!ModelState.IsValid)
+                return UnprocessableEntity(ModelState);
+            var postToReturn = await _service.PostService.UpdatePost(slug, postDto);
             return Ok(postToReturn);
         }
 
@@ -53,28 +58,30 @@ namespace Blog.Api.Controllers
         }
 
         [HttpPost("{slug}/comments")]
-        public IActionResult AddCommentToPost(string slug, [FromBody] CommentCreateDto commentDto)
+        public async Task<IActionResult> AddCommentToPost(string slug, [FromBody] CommentCreateDto commentDto)
         {
             if (commentDto is null) 
                 return BadRequest("Comment object is null.");
-            var commentToReturn = _service.CommentService.CreateCommentForPost(slug, commentDto);
+            if (!ModelState.IsValid) return
+                    UnprocessableEntity(ModelState);
+            var commentToReturn = await _service.CommentService.CreateCommentForPost(slug, commentDto);
             return Ok(commentToReturn);
 
         }
 
         [HttpGet("{slug}/comments")]
-        public IActionResult GetCommentsFromPost(string slug)
+        public async Task<IActionResult> GetCommentsFromPost(string slug)
         {
-            var comments = _service.CommentService.GetCommentsFromPost(slug);
+            var comments = await _service.CommentService.GetCommentsFromPost(slug);
             if (comments is null)
                 return BadRequest("There are no comments for this post");
             return Ok(comments);
         }
 
         [HttpDelete("{slug}/comments/{commentId}")]
-        public IActionResult DeleteCommentFromPost(string slug, int commentId)
+        public async Task<IActionResult> DeleteCommentFromPost(string slug, int commentId)
         {
-            _service.CommentService.DeleteCommentFromPost(slug, commentId);
+            await _service.CommentService.DeleteCommentFromPost(slug, commentId);
             return NoContent();
         }
     }

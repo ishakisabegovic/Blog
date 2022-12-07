@@ -1,6 +1,7 @@
 ﻿using Blog.Core.DTOs;
 using Blog.Infrastructure.Database;
 using Blog.Repositories.Base;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,8 @@ namespace Blog.Repositories.Comment
 
         public void DeleteCommentFromPost(Core.Entities.Comment comment) => Delete(comment);        
 
-        public IEnumerable<Core.Entities.Comment> GetCommentsFromPost(int postId) => GetByCondition(x => x.PostId == postId).ToList();
+        public  IEnumerable<Core.Entities.Comment> GetCommentsFromPost(int postId) =>
+             GetByCondition(x => x.PostId == postId).ToList();
         
 
     }

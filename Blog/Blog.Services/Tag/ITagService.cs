@@ -8,6 +8,6 @@ namespace Blog.Services.Tag
 {
     public interface ITagService
     {
-        IEnumerable<Core.DTOs.TagDto> GetAllTags();
+        Task<IEnumerable<Core.DTOs.TagDto>> GetAllTags();
     }
 }

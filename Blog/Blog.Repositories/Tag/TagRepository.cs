@@ -16,17 +16,17 @@ namespace Blog.Repositories.Tag
         {
         }
 
-        public IEnumerable<Core.Entities.Tag> GetAllTags() =>
-            GetAll()
+        public async Task<IEnumerable<Core.Entities.Tag>> GetAllTags() =>
+            await GetAll()
             .Include(x => x.PostTags)
             .ThenInclude(x => x.Post)
-            .ToList();
+            .ToListAsync();
 
-        public Core.Entities.Tag GetTag(string title) =>
-            GetByCondition(x => x.Title == title)
+        public async Task<Core.Entities.Tag> GetTag(string title) =>
+            await GetByCondition(x => x.Title == title)
             .Include(x => x.PostTags)
             .ThenInclude(x => x.Post)
-            .SingleOrDefault();
+            .SingleOrDefaultAsync();
 
         public void Add(Core.Entities.Tag tag) => Create(tag);
 
